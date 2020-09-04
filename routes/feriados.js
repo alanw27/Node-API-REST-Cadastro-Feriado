@@ -7,14 +7,26 @@ router.get("/:codigo_ibge/:data_feriado", (req, res, next) => {
     if(validaDataCompleta(req.params.data_feriado))
     {
         Feriado.findAll({
-            attributes: [['nome_feriado', 'name']],
+            attributes: ['tipo_feriado', 'nome_feriado'],
             where: {
                 data_feriado: req.params.data_feriado
             }
         }).then((feriados) => {
             if(feriados.length > 0)
             {
-                res.status(200).json(feriados);
+                if(feriados[0].tipo_feriado == 1)
+                {
+                    res.status(200).json({"name": feriados[0].nome_feriado});
+                }
+                else if(feriados[0].tipo_feriado == 2 && req.params.codigo_ibge.length > 2)
+                {
+                    let uf = req.params.codigo_ibge.substring(0,2);
+                    getFeriadoEstadualNoMunicipio(req.params.codigo_ibge, req.params.data_feriado, uf, res);
+                }
+                else
+                {
+                    getFeriadoEstadualNoMunicipio(req.params.codigo_ibge, req.params.data_feriado, 0, res);  
+                }
             }
             else
             {
@@ -166,6 +178,29 @@ function deleteFeriado(tipo_feriado, data_feriado,codigo_ibge,res )
             res.status(204).json({"message": "Deletado com sucesso"});          
         }).catch(error => res.status(500).json({"message": "teste"}));
     }
+}
+function getFeriadoEstadualNoMunicipio(codigo_ibge,data_feriado,uf,res)
+{
+    if(uf>10)
+    {
+        codigo_ibge=uf;
+    }
+    Feriado.findAll({
+        attributes: ['nome_feriado'],
+        where: {
+            codigo_ibge: codigo_ibge,
+            data_feriado: data_feriado
+        }
+    }).then((feriados) => {
+        if(feriados.length > 0)
+        {
+            res.status(200).json({"name" : feriados[0].nome_feriado});
+        }
+        else
+        {
+            res.status(404).json({message: "Feriado não encontrado"});
+        }
+    }).catch(error => res.status(500).json(error));
 }
 function subtrairDias(data, dias)
 {
