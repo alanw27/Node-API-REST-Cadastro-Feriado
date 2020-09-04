@@ -9,7 +9,6 @@ router.get("/:codigo_ibge/:data_feriado", (req, res, next) => {
         Feriado.findAll({
             attributes: [['nome_feriado', 'name']],
             where: {
-                codigo_ibge: req.params.codigo_ibge,
                 data_feriado: req.params.data_feriado
             }
         }).then((feriados) => {
