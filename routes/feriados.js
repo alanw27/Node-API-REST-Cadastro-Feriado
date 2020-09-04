@@ -7,21 +7,14 @@ router.get("/:codigo_ibge/:data_feriado", (req, res, next) => {
     if(validaDataCompleta(req.params.data_feriado))
     {
         Feriado.findAll({
-            attributes: ['tipo_feriado', ['nome_feriado', 'name']],
+            attributes: [['nome_feriado', 'name']],
             where: {
                 data_feriado: req.params.data_feriado
             }
         }).then((feriados) => {
             if(feriados.length > 0)
             {
-                if(feriados[0].tipo_feriado == 1)
-                {
-                    res.status(200).json({message: feriados[0].name});
-                }
-                else
-                {
-                    consultaFeriado(req.params.codigo_ibge, req.params.data_feriado, res);
-                }
+                res.status(200).json(feriados);
             }
             else
             {
@@ -171,27 +164,8 @@ function deleteFeriado(tipo_feriado, data_feriado,codigo_ibge,res )
             where: { data_feriado: data_feriado, codigo_ibge: codigo_ibge }
         }).then((result) => {
             res.status(204).json({"message": "Deletado com sucesso"});          
-        }).catch(error => res.status(500).json({"message": "error"}));
+        }).catch(error => res.status(500).json({"message": "teste"}));
     }
-}
-function consultaFeriado(codigo_ibge, data_feriado, res)
-{
-    Feriado.findAll({
-        attributes: ['tipo_feriado', ['nome_feriado', 'name']],
-        where: {
-            codigo_ibge: codigo_ibge,
-            data_feriado: data_feriado
-        }
-    }).then((feriados) => {
-        if(feriados.length > 0)
-        {
-            res.status(200).json({message: feriados[0].name});
-        }
-        else
-        {
-            res.status(404).json({message: "Feriado não encontrado"});
-        }
-    }).catch(error => res.status(500).json({"message": "error"}));
 }
 function subtrairDias(data, dias)
 {
