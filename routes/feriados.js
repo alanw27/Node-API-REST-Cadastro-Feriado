@@ -7,14 +7,14 @@ router.get("/:codigo_ibge/:data_feriado", (req, res, next) => {
     if(validaDataCompleta(req.params.data_feriado))
     {
         Feriado.findAll({
-            attributes: ['tipo_feriado', ['nome_feriado', 'name']],
+            attributes: [['nome_feriado', 'name']],
             where: {
                 data_feriado: req.params.data_feriado
             }
         }).then((feriados) => {
             if(feriados.length > 0)
             {
-                res.status(200).json(feriados[0].tipo_feriado);
+                res.status(200).json(feriados);
             }
             else
             {
