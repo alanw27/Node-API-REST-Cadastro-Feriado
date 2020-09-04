@@ -14,7 +14,7 @@ router.get("/:codigo_ibge/:data_feriado", (req, res, next) => {
         }).then((feriados) => {
             if(feriados.length > 0)
             {
-                res.status(200).json(feriados);
+                res.status(200).json(feriados[0].tipo_feriado);
             }
             else
             {
