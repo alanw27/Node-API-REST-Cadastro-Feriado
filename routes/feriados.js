@@ -81,19 +81,17 @@ router.put("/:codigo_ibge/:data_feriado", async (req, res, next) => {
     else
     {
         let nomeFeriado = req.params.data_feriado;
-        let dataFeriado = getDataFeriadoMovel(req.params.data_feriado);
-        let tipo_feriado = 2;
-
-        if(req.params.codigo_ibge.length > 2)
+        let dataFeriado = getDataFeriadoMovel(nomeFeriado);
+        if(nomeFeriado == "corpus-christi")
         {
-            tipo_feriado = 3;
+            nomeFeriado = "Corpus Christi";
         }
 
         let [feriado, created] = await Feriado.findOrCreate({
             where: { data_feriado: dataFeriado, codigo_ibge: req.params.codigo_ibge },
             defaults: {
                 codigo_ibge:req.params.codigo_ibge,
-                tipo_feriado:tipo_feriado,
+                tipo_feriado:1,
                 nome_feriado:nomeFeriado
             }
         });
